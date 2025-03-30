@@ -2,8 +2,10 @@
 using AuctionService.Entities;
 using AuctionService.Repositories;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuctionService.Controllers
 {
@@ -21,10 +23,10 @@ namespace AuctionService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions()
+        public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions(string date)
         {
-            var auctions = await _repository.GetAllAuctionsAsync();
-            return _mapper.Map<List<AuctionDto>>(auctions);
+            var auctions = _repository.GetAllAuctionsAsync(date);
+            return await auctions.ProjectTo<AuctionDto>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
         [HttpGet("{id}")]
