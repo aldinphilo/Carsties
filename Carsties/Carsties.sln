@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchService", "SearchService\SearchService.csproj", "{241B7277-5A3C-4B03-9BCB-07FBE2D01CE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{621EA547-6F7B-4B74-B0AD-601AEC2EC2C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{241B7277-5A3C-4B03-9BCB-07FBE2D01CE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{241B7277-5A3C-4B03-9BCB-07FBE2D01CE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{241B7277-5A3C-4B03-9BCB-07FBE2D01CE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{621EA547-6F7B-4B74-B0AD-601AEC2EC2C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{621EA547-6F7B-4B74-B0AD-601AEC2EC2C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{621EA547-6F7B-4B74-B0AD-601AEC2EC2C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{621EA547-6F7B-4B74-B0AD-601AEC2EC2C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

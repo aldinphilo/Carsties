@@ -1,8 +1,9 @@
 ﻿using AuctionService.Data;
 using AuctionService.DTOs;
 using AuctionService.Entities;
-using AutoMapper.QueryableExtensions;
-using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Contracts;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuctionService.Repositories
@@ -10,10 +11,14 @@ namespace AuctionService.Repositories
     public class AuctionsRepository : IAuctionsRepository
     {
         private readonly AuctionDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public AuctionsRepository(AuctionDbContext context)
+        public AuctionsRepository(AuctionDbContext context, IMapper mapper, IPublishEndpoint publishEndpoint)
         {
             _context = context;
+            _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
         }
 
         public IQueryable GetAllAuctionsAsync(string date)
@@ -42,6 +47,9 @@ namespace AuctionService.Repositories
         public async Task<(int, Auction)> CreateAuctionAsync(Auction auction)
         {
             _context.Auctions.Add(auction);
+            var newAction = _mapper.Map<AuctionDto>(auction);
+
+            await _publishEndpoint.Publish(_mapper.Map<AuctionCreated>(newAction));
             var result = await _context.SaveChangesAsync();
             return (result, auction);
         }
@@ -61,6 +69,8 @@ namespace AuctionService.Repositories
             auction.Item.Mileage = updateAuction.Mileage ?? auction.Item.Mileage;
             auction.Item.Year = updateAuction.Year ?? auction.Item.Year;
 
+            await _publishEndpoint.Publish(_mapper.Map<AuctionUpdated>(auction));
+
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -73,6 +83,9 @@ namespace AuctionService.Repositories
             if (auction == null) return (false, false);
 
             _context.Auctions.Remove(auction);
+
+            await _publishEndpoint.Publish(_mapper.Map<AuctionDeleted>(new { id = auction.Id.ToString() }));
+
             return (true, await _context.SaveChangesAsync() > 0);
         }
     }
