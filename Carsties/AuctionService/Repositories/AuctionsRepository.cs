@@ -54,14 +54,15 @@ namespace AuctionService.Repositories
             return (result, auction);
         }
 
-        public async Task<bool> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuction)
+        public async Task<(bool, bool)> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuction, string name)
         {
             var auction = await _context.Auctions
                 .Include(x => x.Item)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (auction == null) return false;
+            if (auction == null) return (false, true);
 
+            if(auction.Seller != name) return (true, false);
 
             auction.Item.Make = updateAuction.Make ?? auction.Item.Make;
             auction.Item.Model = updateAuction.Model ?? auction.Item.Model;
@@ -71,22 +72,24 @@ namespace AuctionService.Repositories
 
             await _publishEndpoint.Publish(_mapper.Map<AuctionUpdated>(auction));
 
-            return await _context.SaveChangesAsync() > 0;
+            return (await _context.SaveChangesAsync() > 0, true);
         }
 
-        public async Task<(bool, bool)> DeleteAuctionAsync(Guid id)
+        public async Task<(bool, bool, bool)> DeleteAuctionAsync(Guid id, string name)
         {
             var auction = await _context.Auctions
                 .Include(x => x.Item)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (auction == null) return (false, false);
+            if (auction == null) return (false, false, true);
+
+            if (auction.Seller != name) return (true, false, false);
 
             _context.Auctions.Remove(auction);
 
-            await _publishEndpoint.Publish(_mapper.Map<AuctionDeleted>(new { id = auction.Id.ToString() }));
+            await _publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
 
-            return (true, await _context.SaveChangesAsync() > 0);
+            return (true, await _context.SaveChangesAsync() > 0, true);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace AuctionService.Repositories
         IQueryable GetAllAuctionsAsync(string date);
         Task<Auction> GetAuctionByIdAsync(Guid id);
         Task<(int, Auction)> CreateAuctionAsync(Auction auction);
-        Task<bool> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuction);
-        Task<(bool, bool)> DeleteAuctionAsync(Guid id);
+        Task<(bool, bool)> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuction, string name);
+        Task<(bool, bool, bool)> DeleteAuctionAsync(Guid id, string name);
     }
 }
